@@ -12,7 +12,12 @@ class ApiFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->add('name', TextType::class);
+        $builder->add('name', TextType::class, [
+            'attr' => [
+                'pattern' => '[a-zA-Z][a-zA-Z0-9-]{2,40}[a-zA-Z0-9]',
+                'title' => 'The endpoint name should have at least 5 characters and made of alphabets. This will be used as API URI. E.g. alibaba, myendpoint, etc'
+            ]
+        ]);
     }
 
     public function configureOptions(OptionsResolver $resolver)
