@@ -1,0 +1,70 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ api.name }} API{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-md-8">
+            <h1 class="h3">API: {{ api.name }}</h1>
+            <code>{{ app_url }}/api/{{ api.name }} &rarr; {any}</code>
+        </div>
+        <div class="col-md-4">
+            <h2 class="h5">Requests (<span id="incoming-requests-count">0</span>)</h2>
+        </div>
+    </div>
+
+    <div class="mt-5" id="incoming-requests"></div>
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        function renderAccordion(data) {
+            const now = new Date().getTime();
+
+            return `
+                <div class="row mb-2">
+                    <div class="col-md-3">
+                        ${data.method} <br>
+                        <code class="text-truncate">/${data.path}</code>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="accordion" id="wrapper-${now}">
+                            <div class="card">
+                                <div class="card-header p-0" id="heading-${now}">
+                                    <h2 class="mb-0">
+                                        <button class="btn btn-link btn-block text-left" style="box-shadow: none" type="button" data-toggle="collapse" data-target="#target-${now}" aria-expanded="true" aria-controls="collapseOne">
+                                            Request headers
+                                        </button>
+                                    </h2>
+                                </div>
+
+                                <div id="target-${now}" class="collapse" aria-labelledby="heading-${now}" data-parent="#wrapper-${now}">
+                                    <div class="card-body">
+                                        <pre>${data.requestHeaders}</pre>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        $(document).ready(function() {
+            const eventSource = new EventSource('http://localhost:3000/.well-known/mercure?topic=' + encodeURIComponent('api/{{ api.name }}'));
+
+            let incomingRequestsCount = 0;
+
+            // Will be called every time an update is published by the server
+            eventSource.onmessage = event => {
+                incomingRequestsCount++;
+
+                const data = JSON.parse(event.data)
+                const template = renderAccordion(data);
+
+                $('#incoming-requests-count').html(incomingRequestsCount);
+                $('#incoming-requests').prepend(template);
+            }
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,87 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Create new Endpoint{% endblock %}
+
+{% block body %}
+    {{ form_start(form) }}
+        <div class="row">
+            <div class="col-md-6 offset-md-3">
+                <h1 class="h2">Test</h1>
+                {{ form_widget(form.api) }}
+
+                {{ form_row(form.method) }}
+                {{ form_row(form.path) }}
+                {{ form_row(form.statusCode) }}
+
+                <button type="button" id="btn-add-header" class="btn btn-sm btn-success">
+                    Add header
+                </button>
+
+                <div class="headers my-4"
+                    data-prototype="<div class='col'>{{ form_widget(form.endpointHeaders.vars.prototype.name)|e('html_attr') }}</div>
+                                    <div class='col'>{{ form_widget(form.endpointHeaders.vars.prototype.value)|e('html_attr') }}</div>">
+                </div>
+
+                {{ form_row(form.responseBody) }}
+
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">Create</button>
+                </div>
+            </div>
+        </div>
+    {{ form_end(form) }}
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        // setup an "add a tag" link
+        let addHeaderLink = $('#btn-add-header');
+
+        $(document).ready(function() {
+
+            // Get the ul that holds the collection of tags
+            let collectionHolder = $('.headers');
+
+            // count the current form inputs we have (e.g. 2), use that as the new
+            // index when inserting a new item (e.g. 2)
+            collectionHolder.data('index', collectionHolder.find(':input').length);
+
+            addHeaderLink.on('click', function(e) {
+                // prevent the link from creating a "#" on the URL
+                e.preventDefault();
+
+                // add a new tag form (see code block below)
+                addHeaderForm(collectionHolder);
+            });
+        });
+
+        function addHeaderForm(collectionHolder) {
+            // Get the data-prototype explained earlier
+            let prototype = collectionHolder.data('prototype');
+
+            // get the new index
+            let index = collectionHolder.data('index');
+
+            // Replace '$$name$$' in the prototype's HTML to
+            // instead be a number based on how many items we have
+            let newForm = prototype.replace(/__name__/g, index);
+            let newFormDiv = $('<div class="form-row mt-1"></div>').append(newForm);
+            newFormDiv.append('<button type="button" class="remove-header close text-danger"><span aria-hidden="true">&times;</span></button>');
+
+            // increase the index with one for the next item
+            collectionHolder.data('index', index + 1);
+
+            // add the form
+            collectionHolder.append(newFormDiv);
+
+            // handle the removal, just for this example
+            $('.remove-header').click(function(e) {
+                e.preventDefault();
+
+                $(this).parent().remove();
+
+                return false;
+            });
+        }
+    </script>
+{% endblock %}

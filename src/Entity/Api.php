@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=ApiRepository::class)
@@ -20,22 +21,29 @@ class Api
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private $id;
+    private int $id;
+
+    /**
+     * @Assert\NotBlank(
+     *     message="API name should not be blank"
+     * )
+     * @Assert\Length(
+     *     min = 4,
+     *     minMessage = "API name must be at least {{ limit }} characters long",
+     * )
+     * @ORM\Column(type="string", length=255, unique=true)
+     */
+    private string $name;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $name;
-
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private $token;
+    private string $token;
 
     /**
      * @ORM\OneToMany(targetEntity=Endpoint::class, mappedBy="api")
      */
-    private $endpoints;
+    private Collection $endpoints;
 
     public function __construct()
     {

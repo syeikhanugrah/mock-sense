@@ -1,0 +1,65 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    <style>
+        .input-container-wrapper {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+        }
+
+        .input-container {
+            flex-grow: 1;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-md-8">
+            <div class="jumbotron">
+                <h1 class="h2">Create new API</h1>
+                <p class="lead">Start by creating an API to collect and inspect HTTP requests</p>
+
+                {{ form_start(form) }}
+                    <div class="form-group input-container-wrapper">
+                        <div class="input-container">
+                            {{ form_widget(form.name) }}
+                        </div>
+
+                        <button type="submit" class="btn btn-primary ml-2">Create</button>
+                    </div>
+
+                    {% for message in app.flashes('error') %}
+                        <small id="emailHelp" class="form-text text-danger">
+                            {{ message }}
+                        </small>
+                    {% endfor %}
+
+                    {% if not form.vars.valid %}
+                        {{ form_errors(form.name) }}
+                    {% endif %}
+
+                {{ form_end(form) }}
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card" style="width: 18rem;">
+                <div class="card-header font-weight-bold">
+                    My API
+                </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">
+                        <a href="#">API 1</a>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="#">API 2</a>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="#">API 3</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -20,33 +20,38 @@ class Endpoint
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private $id;
+    private int $id;
 
     /**
      * @ORM\ManyToOne(targetEntity=Api::class, inversedBy="endpoints")
      * @ORM\JoinColumn(nullable=false)
      */
-    private $api;
+    private ?Api $api;
 
     /**
      * @ORM\Column(type="string", length=10)
      */
-    private $method;
+    private string $method;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $path;
+    private string $path;
 
     /**
      * @ORM\Column(type="integer")
      */
-    private $statusCode;
+    private int $statusCode;
+
+    /**
+     * @ORM\Column(type="text")
+     */
+    private string $responseBody;
 
     /**
      * @ORM\OneToMany(targetEntity=EndpointHeader::class, mappedBy="endpoint")
      */
-    private $endpointHeaders;
+    private Collection $endpointHeaders;
 
     public function __construct()
     {
@@ -102,6 +107,18 @@ class Endpoint
     public function setStatusCode(int $statusCode): self
     {
         $this->statusCode = $statusCode;
+
+        return $this;
+    }
+
+    public function getResponseBody(): ?string
+    {
+        return $this->responseBody;
+    }
+
+    public function setResponseBody(string $responseBody): self
+    {
+        $this->responseBody = $responseBody;
 
         return $this;
     }

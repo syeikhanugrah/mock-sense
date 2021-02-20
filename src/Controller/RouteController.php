@@ -1,0 +1,82 @@
+<?php
+
+namespace App\Controller;
+
+use App\Entity\Api;
+use App\Entity\Endpoint;
+use App\Repository\ApiRepository;
+use App\Repository\EndpointRepository;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Mercure\PublisherInterface;
+use Symfony\Component\Mercure\Update;
+use Symfony\Component\Routing\Annotation\Route;
+
+class RouteController extends AbstractController
+{
+    protected ApiRepository $apiRepository;
+    protected EndpointRepository $endpointRepository;
+
+    public function __construct(ApiRepository $apiRepository, EndpointRepository $endpointRepository)
+    {
+        $this->apiRepository = $apiRepository;
+        $this->endpointRepository = $endpointRepository;
+    }
+
+    /**
+     * @Route("/api/{apiName}/{path}", name="api_router", requirements={"path"=".+"})
+     */
+    public function index(string $apiName, string $path, Request $request, PublisherInterface $publisher): Response
+    {
+        $api = $this->apiRepository->findOneBy(['name' => $apiName]);
+
+        if (!($api instanceof Api)) {
+            throw $this->createNotFoundException('API not found');
+        }
+
+        $endpoint = $this->endpointRepository->findOneBy([
+            'api' => $api,
+            'method' => $request->getMethod(),
+            'path' => '/'.$path,
+        ]);
+
+        if (!($endpoint instanceof Endpoint)) {
+            $updateTopic = sprintf('api/%s', $apiName);
+            $qs = '?'.$request->getQueryString() ?? '';
+
+            $updateValue = [
+                'path' => $path . $qs,
+                'method' => $request->getMethod(),
+                'requestHeaders' => $request->headers->__toString(),
+            ];
+
+            $update = new Update($updateTopic, json_encode($updateValue));
+
+            $publisher($update);
+
+            return new Response('Nothing is configured for this request path. Create a rule and start building a mock API.', 200);
+        }
+
+        $endpointHeadersArrayCollection = $endpoint->getEndpointHeaders();
+        $endpointHeadersArray = [];
+
+        foreach ($endpointHeadersArrayCollection as $endpointHeader) {
+            $endpointHeadersArray[$endpointHeader->getName()] = $endpointHeader->getValue();
+        }
+
+        $updateTopic = sprintf('api/%s', $apiName);
+
+        $updateValue = [
+            'path' => $path,
+            'method' => $request->getMethod(),
+            'requestHeaders' => $request->headers->__toString(),
+        ];
+
+        $update = new Update($updateTopic, json_encode($updateValue));
+
+        $publisher($update);
+
+        return new Response($endpoint->getResponseBody(), $endpoint->getStatusCode(), $endpointHeadersArray);
+    }
+}
