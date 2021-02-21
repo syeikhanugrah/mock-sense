@@ -27,7 +27,7 @@ class RouteController extends AbstractController
     /**
      * @Route("/api/{apiName}/{path}", name="api_router", requirements={"path"=".+"})
      */
-    public function index(Request $request, PublisherInterface $publisher, string $apiName, string $path = ''): Response
+    public function index(Request $request, PublisherInterface $publisher, string $apiName = '', string $path = ''): Response
     {
         $api = $this->apiRepository->findOneBy(['name' => $apiName]);
 
