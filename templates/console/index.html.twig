@@ -44,7 +44,6 @@
                     <div class="col-md-3">
                         <small class="d-inline-block text-monospace mb-1"><span class="text-uppercase">{{ endpoint.method }}</span> <span class="text-danger">{{ endpoint.path }}</span></small>
                         <small class="d-block text-monospace mb-1">
-                            <a href="">Edit</a>
                             <a href="{{ path('console_delete_endpoint', {'apiName': api.name, 'endpointId': endpoint.id}) }}"
                                 onclick="return confirm('Are you sure delete this mock response?')">
                                 Delete
@@ -72,23 +71,16 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row mb-4">
-                    <div class="col-md-9 offset-md-3">
-                        <div class="accordion" id="wrapper-response-{{ endpoint.id }}">
                             <div class="card">
-                                <div class="card-header p-0" id="heading-response-{{ endpoint.id }}">
+                                <div class="card-header p-0" id="heading-mock-response-{{ endpoint.id }}">
                                     <h2 class="mb-0">
-                                        <button class="btn btn-link btn-block text-left" style="box-shadow: none" type="button" data-toggle="collapse" data-target="#target-response-{{ endpoint.id }}" aria-expanded="true" aria-controls="target-response-{{ endpoint.id }}">
+                                        <button class="btn btn-link btn-block text-left" style="box-shadow: none" type="button" data-toggle="collapse" data-target="#target-mock-response-{{ endpoint.id }}" aria-expanded="true" aria-controls="target-mock-response-{{ endpoint.id }}">
                                             Response body
                                         </button>
                                     </h2>
                                 </div>
 
-                                <div id="target-response-{{ endpoint.id }}" class="collapse" aria-labelledby="heading-response-{{ endpoint.id }}" data-parent="#wrapper-response-{{ endpoint.id }}">
+                                <div id="target-mock-response-{{ endpoint.id }}" class="collapse" aria-labelledby="heading-mock-response-{{ endpoint.id }}" data-parent="#wrapper-{{ endpoint.id }}">
                                     <div class="card-body">
                                         <pre>{{ endpoint.responseBody }}</pre>
                                     </div>
@@ -122,7 +114,9 @@
             return `
                 <div class="row mb-2">
                     <div class="col-md-3">
-                        <small class="d-block text-monospace mb-1">${data.method}</small>
+                        <small class="d-block text-monospace mb-1">
+                            ${data.method} <span title="Defined" class="text-success ${data.definedRoute ? '' : 'd-none'}" style="font-size: 18px">&check;</span>
+                        </small>
                         <small class="d-block text-monospace text-danger text-truncate mb-1" title="${data.path}">/${data.path}</small>
                         <small class="d-block text-monospace text-secondary mb-2">${stringDate}</small>
                     </div>
@@ -131,7 +125,7 @@
                             <div class="card">
                                 <div class="card-header p-0" id="heading-${nowTimestamp}">
                                     <h2 class="mb-0">
-                                        <button class="btn btn-link btn-block text-left" style="box-shadow: none" type="button" data-toggle="collapse" data-target="#target-${nowTimestamp}" aria-expanded="true" aria-controls="collapseOne">
+                                        <button class="btn btn-link btn-block text-left" style="box-shadow: none" type="button" data-toggle="collapse" data-target="#target-${nowTimestamp}" aria-expanded="true" aria-controls="target-${nowTimestamp}">
                                             Request headers
                                         </button>
                                     </h2>
@@ -143,9 +137,26 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="card">
+                                <div class="card-header p-0" id="heading-response-${nowTimestamp}">
+                                    <h2 class="mb-0">
+                                        <button class="btn btn-link btn-block text-left" style="box-shadow: none" type="button" data-toggle="collapse" data-target="#target-response-${nowTimestamp}" aria-expanded="true" aria-controls="target-response-${nowTimestamp}">
+                                            Response body
+                                        </button>
+                                    </h2>
+                                </div>
+
+                                <div id="target-response-${nowTimestamp}" class="collapse" aria-labelledby="heading-response-${nowTimestamp}" data-parent="#wrapper-${nowTimestamp}">
+                                    <div class="card-body">
+                                        <pre>${data.responseBody}</pre>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
+
+                <hr>
             `;
         }
 

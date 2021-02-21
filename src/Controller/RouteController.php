@@ -31,8 +31,10 @@ class RouteController extends AbstractController
     {
         $api = $this->apiRepository->findOneBy(['name' => $apiName]);
 
+        $defaultResponse = 'Nothing is configured for this request path. Create a rule and start building a mock API.';
+
         if (!($api instanceof Api)) {
-            return new Response('Nothing is configured for this request path. Create a rule and start building a mock API.', 200);
+            return new Response($defaultResponse, 200);
         }
 
         $endpoint = $this->endpointRepository->findOneBy([
@@ -50,13 +52,15 @@ class RouteController extends AbstractController
                 'path' => $path . $completeQs,
                 'method' => $request->getMethod(),
                 'requestHeaders' => $request->headers->__toString(),
+                'responseBody' => $defaultResponse,
+                'definedRoute' => false,
             ];
 
             $update = new Update($updateTopic, json_encode($updateValue));
 
             $publisher($update);
 
-            return new Response('Nothing is configured for this request path. Create a rule and start building a mock API.', 200);
+            return new Response($defaultResponse, 200);
         }
 
         $endpointHeadersArrayCollection = $endpoint->getEndpointHeaders();
@@ -72,6 +76,8 @@ class RouteController extends AbstractController
             'path' => $path,
             'method' => $request->getMethod(),
             'requestHeaders' => $request->headers->__toString(),
+            'responseBody' => $endpoint->getResponseBody(),
+            'definedRoute' => true,
         ];
 
         $update = new Update($updateTopic, json_encode($updateValue));
