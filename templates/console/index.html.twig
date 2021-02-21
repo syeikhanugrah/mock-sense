@@ -22,11 +22,21 @@
             const dateNow = new Date();
             const nowTimestamp = dateNow.getTime();
 
+            let year = dateNow.getFullYear();
+            let month = dateNow.getMonth() + 1;
+            let day = dateNow.getDate();
+            let hours = dateNow.getHours();
+            let minutes = dateNow.getMinutes();
+            let seconds = dateNow.getSeconds();
+
+            let stringDate = year + "-" + month + "-" + day + " " + hours + ":" + minutes + ":" + seconds;
+
             return `
                 <div class="row mb-2">
                     <div class="col-md-3">
-                        ${data.method} <br>
-                        <code class="text-truncate d-inline-block">/${data.path}</code>
+                        <small class="d-block text-monospace mb-1">${data.method}</small>
+                        <small class="d-block text-monospace text-danger text-truncate mb-1">/${data.path}</small>
+                        <small class="d-block text-monospace text-danger mb-1">${stringDate}</small>
                     </div>
                     <div class="col-md-9">
                         <div class="accordion" id="wrapper-${nowTimestamp}">
