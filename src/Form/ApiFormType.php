@@ -15,7 +15,7 @@ class ApiFormType extends AbstractType
         $builder->add('name', TextType::class, [
             'attr' => [
                 'pattern' => '[a-zA-Z][a-zA-Z0-9-]{2,40}[a-zA-Z0-9]',
-                'title' => 'The endpoint name should have at least 5 characters and made of alphabets. This will be used as API URI. E.g. alibaba, myendpoint, etc'
+                'title' => 'The endpoint name should have at least 4 characters and made of alphabets. This will be used as API URI. E.g. alibaba, myendpoint, etc'
             ]
         ]);
     }
