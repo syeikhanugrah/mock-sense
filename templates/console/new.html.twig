@@ -1,12 +1,12 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Create new Endpoint{% endblock %}
+{% block title %}Create new mock{% endblock %}
 
 {% block body %}
     {{ form_start(form) }}
         <div class="row">
             <div class="col-md-6 offset-md-3">
-                <h1 class="h2">Test</h1>
+                <h1 class="h2">New mock for API {{ api.name }}</h1>
                 {{ form_widget(form.api) }}
 
                 {{ form_row(form.method) }}
@@ -25,7 +25,12 @@
                 {{ form_row(form.responseBody) }}
 
                 <div class="form-group">
-                    <button type="submit" class="btn btn-primary">Create</button>
+                    <a href="{{ path('console', {'apiName': api.name}) }}" class="btn btn-secondary">
+                        Cancel
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        Create
+                    </button>
                 </div>
             </div>
         </div>

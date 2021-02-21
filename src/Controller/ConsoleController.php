@@ -6,6 +6,7 @@ use App\Entity\Api;
 use App\Entity\Endpoint;
 use App\Form\EndpointType;
 use App\Repository\ApiRepository;
+use App\Repository\EndpointRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -17,11 +18,13 @@ class ConsoleController extends AbstractController
     use ControllerHelper;
 
     protected ApiRepository $apiRepository;
+    protected EndpointRepository $endpointRepository;
     protected ParameterBagInterface $appParams;
 
-    public function __construct(ApiRepository $apiRepository, ParameterBagInterface $appParams)
+    public function __construct(ApiRepository $apiRepository, EndpointRepository $endpointRepository, ParameterBagInterface $appParams)
     {
         $this->apiRepository = $apiRepository;
+        $this->endpointRepository = $endpointRepository;
         $this->appParams = $appParams;
     }
 
@@ -81,5 +84,18 @@ class ConsoleController extends AbstractController
             'api' => $api,
             'form' => $form->createView(),
         ]);
+    }
+
+    /**
+     * @Route("/console/{apiName}/{endpointId}/delete", name="console_delete_endpoint", methods="GET")
+     */
+    public function delete(string $apiName, int $endpointId)
+    {
+        $endpoint = $this->endpointRepository->find($endpointId);
+
+        $this->getEntityManager()->remove($endpoint);
+        $this->getEntityManager()->flush();
+
+        return $this->redirectToRoute('console', ['apiName' => $apiName]);
     }
 }

@@ -2,6 +2,10 @@
 
 {% block title %}{{ api.name }} API{% endblock %}
 
+{% block stylesheets %}
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+{% endblock %}
+
 {% block body %}
     <div class="row">
         <div class="col-md-8">
@@ -10,10 +14,94 @@
         </div>
         <div class="col-md-4">
             <h2 class="h5">Requests (<span id="incoming-requests-count">0</span>)</h2>
+            <div>
+                <a href="{{ path('console_new', {'apiName': api.name}) }}" class="btn btn-sm btn-primary" title="Add new mock response">
+                    <i class="material-icons">add</i>
+                </a>
+            </div>
         </div>
     </div>
 
-    <div class="mt-5" id="incoming-requests"></div>
+    <ul class="nav nav-tabs mt-4" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" id="incoming-requests-tab" data-toggle="tab" href="#incoming-requests" role="tab" aria-controls="incoming-requests" aria-selected="true">
+                Incoming request
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="mocks-tab" data-toggle="tab" href="#mocks" role="tab" aria-controls="mocks">
+                Mock list
+            </a>
+        </li>
+    </ul>
+
+    <div class="tab-content mt-4">
+        <div class="tab-pane fade show active" id="incoming-requests" role="tabpanel" aria-labelledby="incoming-requests-tab">
+        </div>
+        <div class="tab-pane fade" id="mocks" role="tabpanel" aria-labelledby="contact-tab">
+            {% for endpoint in endpoints %}
+                <div class="row mb-2">
+                    <div class="col-md-3">
+                        <small class="d-inline-block text-monospace mb-1"><span class="text-uppercase">{{ endpoint.method }}</span> <span class="text-danger">{{ endpoint.path }}</span></small>
+                        <small class="d-block text-monospace mb-1">
+                            <a href="">Edit</a>
+                            <a href="{{ path('console_delete_endpoint', {'apiName': api.name, 'endpointId': endpoint.id}) }}"
+                                onclick="return confirm('Are you sure delete this mock response?')">
+                                Delete
+                            </a>
+                        </small>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="accordion" id="wrapper-{{ endpoint.id }}">
+                            <div class="card">
+                                <div class="card-header p-0" id="heading-{{ endpoint.id }}">
+                                    <h2 class="mb-0">
+                                        <button class="btn btn-link btn-block text-left" style="box-shadow: none" type="button" data-toggle="collapse" data-target="#target-{{ endpoint.id }}" aria-expanded="true" aria-controls="target-{{ endpoint.id }}">
+                                            Response headers
+                                        </button>
+                                    </h2>
+                                </div>
+
+                                <div id="target-{{ endpoint.id }}" class="collapse" aria-labelledby="heading-{{ endpoint.id }}" data-parent="#wrapper-{{ endpoint.id }}">
+                                    <div class="card-body">
+                                        {% for header in endpoint.endpointHeaders %}
+                                            <pre>{{ header.name }}: {{ header.value }}</pre>
+                                        {% else %}
+                                            <pre>Response header are empty</pre>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-md-9 offset-md-3">
+                        <div class="accordion" id="wrapper-response-{{ endpoint.id }}">
+                            <div class="card">
+                                <div class="card-header p-0" id="heading-response-{{ endpoint.id }}">
+                                    <h2 class="mb-0">
+                                        <button class="btn btn-link btn-block text-left" style="box-shadow: none" type="button" data-toggle="collapse" data-target="#target-response-{{ endpoint.id }}" aria-expanded="true" aria-controls="target-response-{{ endpoint.id }}">
+                                            Response body
+                                        </button>
+                                    </h2>
+                                </div>
+
+                                <div id="target-response-{{ endpoint.id }}" class="collapse" aria-labelledby="heading-response-{{ endpoint.id }}" data-parent="#wrapper-response-{{ endpoint.id }}">
+                                    <div class="card-body">
+                                        <pre>{{ endpoint.responseBody }}</pre>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <hr>
+            {% endfor %}
+        </div>
+    </div>
 {% endblock %}
 
 {% block javascripts %}

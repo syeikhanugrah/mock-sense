@@ -49,7 +49,7 @@ class Endpoint
     private string $responseBody;
 
     /**
-     * @ORM\OneToMany(targetEntity=EndpointHeader::class, mappedBy="endpoint")
+     * @ORM\OneToMany(targetEntity=EndpointHeader::class, mappedBy="endpoint", orphanRemoval=true)
      */
     private Collection $endpointHeaders;
 
