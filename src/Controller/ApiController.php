@@ -52,4 +52,22 @@ class ApiController extends AbstractController
             'form' => $form->createView(),
         ]);
     }
+
+    /**
+     * @Route("/api-info", name="get_api_info", methods="GET")
+     */
+    public function getApiInfo(Request $request)
+    {
+        $token = $request->get('token');
+        $api = $this->apiRepository->findOneBy(['token' => $token]);
+
+        if (!($api instanceof Api)) {
+            return $this->json(['valid' => false]);
+        }
+
+        return $this->json([
+            'valid' => true,
+            'apiName' => $api->getName(),
+        ]);
+    }
 }

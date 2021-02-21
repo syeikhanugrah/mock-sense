@@ -48,18 +48,31 @@
                 <div class="card-header font-weight-bold">
                     My API
                 </div>
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item">
-                        <a href="#">API 1</a>
-                    </li>
-                    <li class="list-group-item">
-                        <a href="#">API 2</a>
-                    </li>
-                    <li class="list-group-item">
-                        <a href="#">API 3</a>
-                    </li>
+                <ul id="api-list" class="list-group list-group-flush">
                 </ul>
             </div>
         </div>
     </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        $(document).ready(function () {
+            for (let i = 0; i < localStorage.length; i++) {
+                const token = localStorage.getItem(localStorage.key(i));
+
+                $.get(`{{ path('get_api_info') }}?token=${token}`, function (data) {
+                    if (data.valid) {
+                        const template = `
+                            <li class="list-group-item">
+                                <a href="console/${data.apiName}">${data.apiName}</a>
+                            </li>
+                        `;
+
+                        $('#api-list').append(template);
+                    }
+                });
+            }
+        });
+    </script>
 {% endblock %}
