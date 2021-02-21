@@ -32,7 +32,7 @@ class RouteController extends AbstractController
         $api = $this->apiRepository->findOneBy(['name' => $apiName]);
 
         if (!($api instanceof Api)) {
-            throw $this->createNotFoundException('API not found');
+            return new Response('Nothing is configured for this request path. Create a rule and start building a mock API.', 200);
         }
 
         $endpoint = $this->endpointRepository->findOneBy([
@@ -43,10 +43,11 @@ class RouteController extends AbstractController
 
         if (!($endpoint instanceof Endpoint)) {
             $updateTopic = sprintf('api/%s', $apiName);
-            $qs = '?'.$request->getQueryString() ?? '';
+            $qs = $request->getQueryString() ?? '';
+            $completeQs = $qs ? '?'.$qs : '';
 
             $updateValue = [
-                'path' => $path . $qs,
+                'path' => $path . $completeQs,
                 'method' => $request->getMethod(),
                 'requestHeaders' => $request->headers->__toString(),
             ];

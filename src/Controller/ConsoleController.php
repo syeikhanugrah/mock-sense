@@ -7,6 +7,7 @@ use App\Entity\Endpoint;
 use App\Form\EndpointType;
 use App\Repository\ApiRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -16,10 +17,12 @@ class ConsoleController extends AbstractController
     use ControllerHelper;
 
     protected ApiRepository $apiRepository;
+    protected ParameterBagInterface $appParams;
 
-    public function __construct(ApiRepository $apiRepository)
+    public function __construct(ApiRepository $apiRepository, ParameterBagInterface $appParams)
     {
         $this->apiRepository = $apiRepository;
+        $this->appParams = $appParams;
     }
 
     /**
@@ -38,6 +41,7 @@ class ConsoleController extends AbstractController
         return $this->render('console/index.html.twig', [
             'api' => $api,
             'endpoints' => $endpoints,
+            'mercureHubUrl' => $this->appParams->get('mercure_hub_url'),
         ]);
     }
 

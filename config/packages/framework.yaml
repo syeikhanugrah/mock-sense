@@ -1,6 +1,7 @@
 # see https://symfony.com/doc/current/reference/configuration/framework.html
 framework:
     secret: '%env(APP_SECRET)%'
+    mercure_hub_url: '%env(MERCURE_PUBLISH_URL)%'
     #csrf_protection: true
     #http_method_override: true
 
